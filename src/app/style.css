@@ -1,0 +1,14 @@
+.scroll-horizontal {
+  display: flex;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-horizontal > div {
+  scroll-snap-align: start;
+}
+
+.scroll-horizontal::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar for WebKit browsers */
+}

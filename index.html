@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to VCF Converter</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <input type="file" id="csvFileInput" accept=".csv" />
+    <button onclick="convertCSVToVCF()">Convert to VCF</button>
+    <pre id="vcfDataDisplay" style="white-space: pre-wrap; background: #f8f8f8; padding: 10px; border: 1px solid #ccc; margin-top: 20px;"></pre>
+    <table id="contactTable" style="display: none;">
+        <thead>
+            <tr id="contactTableHeader"></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <a id="downloadLink" style="display: none;">Download VCF</a>
+
+    <script>
+        function convertCSVToVCF() {
+            const input = document.getElementById('csvFileInput');
+            if (!input.files.length) {
+                alert('Please select a CSV file first');
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const csvData = event.target.result;
+                const vcfData = parseCSVToVCF(csvData);
+                displayVCFData(vcfData);
+                displayContactTable(csvData);
+                downloadVCF(vcfData);
+            };
+
+            reader.readAsText(file);
+        }
+
+        function parseCSVToVCF(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',').map(header => header.trim().toLowerCase());
+
+            let vcfString = '';
+            for (let i = 1; i < lines.length; i++) {
+                const data = lines[i].split(',');
+                if (data.length !== headers.length) {
+                    continue; // skip incomplete lines
+                }
+
+                const contact = {};
+                for (let j = 0; j < headers.length; j++) {
+                    contact[headers[j]] = data[j].trim();
+                }
+
+                vcfString += `BEGIN:VCARD\nVERSION:3.0\n`;
+                if (contact['first name'] || contact['last name']) {
+                    vcfString += `N:${contact['last name'] || ''};${contact['first name'] || ''}\n`;
+                    vcfString += `FN:${contact['first name'] || ''} ${contact['last name'] || ''}\n`;
+                }
+                if (contact['email']) {
+                    vcfString += `EMAIL:${contact['email']}\n`;
+                }
+                if (contact['phone']) {
+                    vcfString += `TEL:${contact['phone']}\n`;
+                }
+                if (contact['address']) {
+                    vcfString += `ADR:${contact['address']}\n`;
+                }
+                vcfString += `END:VCARD\n`;
+            }
+            return vcfString;
+        }
+
+        function displayVCFData(vcfData) {
+            const displayElement = document.getElementById('vcfDataDisplay');
+            displayElement.textContent = vcfData;
+        }
+
+        function displayContactTable(csv) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].split(',').map(header => header.trim());
+
+            const table = document.getElementById('contactTable');
+            const thead = document.getElementById('contactTableHeader');
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = ''; // Clear previous content
+            thead.innerHTML = ''; // Clear previous headers
+
+            // Create table headers
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                thead.appendChild(th);
+            });
+
+            // Create table rows
+            for (let i = 1; i < lines.length; i++) {
+                const data = lines[i].split(',');
+                if (data.length !== headers.length) {
+                    continue; // skip incomplete lines
+                }
+
+                const tr = document.createElement('tr');
+                for (let j = 0; j < headers.length; j++) {
+                    const td = document.createElement('td');
+                    td.textContent = data[j].trim();
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(tr);
+            }
+
+            table.style.display = 'table';
+        }
+
+        function downloadVCF(vcfData) {
+            const blob = new Blob([vcfData], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.getElementById('downloadLink');
+            link.href = url;
+            link.download = 'contacts.vcf';
+            link.style.display = 'block';
+            link.click();
+            link.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

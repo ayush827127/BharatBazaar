@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "shop_name": "Shop 1",
+    "description": "This is Shop 1",
+    "owner_phone": "1234567890",
+    "email": "shop1@example.com",
+    "owner_name": "Owner 1",
+    "account_no": "123456789",
+    "categories": [
+      {
+        "category_name": "Category 1",
+        "products": [
+          {
+            "name": "Product 1",
+            "title": "Product 1 Title",
+            "price": 10.99,
+            "photos": [
+              "https://dummyimage.com/300x300",
+              "https://dummyimage.com/300x300"
+            ],
+            "available_stock": 100
+          },
+          {
+            "name": "Product 2",
+            "title": "Product 2 Title",
+            "price": 20.99,
+            "photos": [
+              "https://dummyimage.com/300x300",
+              "https://dummyimage.com/300x300"
+            ],
+            "available_stock": 50
+          }
+        ]
+      },
+      {
+        "category_name": "Category 2",
+        "products": [
+          {
+            "name": "Product 3",
+            "title": "Product 3 Title",
+            "price": 15.99,
+            "photos": [
+              "https://dummyimage.com/300x300",
+              "https://dummyimage.com/300x300"
+            ],
+            "available_stock": 75
+          }
+        ]
+      }
+    ]
+  }
+]
